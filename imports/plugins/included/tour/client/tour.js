@@ -5,6 +5,107 @@ import { Accounts } from "/lib/collections";
 
 const tour = introJs.introJs();
 
+
+const registeredBuyerTourSteps = [
+  {
+    intro: `<h2>Welcome to <strong>Reaction</strong> Commerce</h2>
+    <hr>
+    <div>
+      <strong>Reaction</strong> Commererce is your one stop ecommerce platform for all types of goods and services.<br>
+      This brief tour would help you get up and running with our platform.
+    </div>`
+  },
+  {
+    intro: `<h2>Products</h2>
+    <hr>
+    <div>
+      All available products would be displayed here. Just browse through.<br>
+      When you find that product you have been searching for, click on it and proceed to adding it to your cart.
+    </div>`
+  },
+  {
+    element: ".search",
+    intro: `<h2>Search</h2>
+    <hr>
+    <div>
+      With countless number of products waiting to be checked out, we help you 
+      discover that product you're looking for by offering you an intuitive to use 
+      search system with the following capabilities:
+      <ol>
+        <li>Sorting products search results in Ascending or Descending price range.</li>
+        <li>Filter products search results based on tags</li>
+        <li>Filter products search results by brands</li>
+        <li>Sort products search results based on the product sales</li>
+        <li>Sort product search results based on their creation date (newest item)</li>
+      </ol>
+      Also note that search results appear instantly as you type.
+      <br> Found that product ? Click on it's icon, and proceed to adding it to your cart
+    </div>`
+  },
+  {
+    element: ".cart",
+    intro: `<h2>My Cart</h2>
+    <hr>
+    <div>
+      Yeah, So you've found that product or those products and added them to you cart.
+      It's time to check out.<br>
+      Click on the cart icon to check out. <br>
+      Note that we presently offer only 3 means of payment: 
+      <ol>
+        <li>
+          <strong>Wallet</strong>
+        </li>
+        <li>
+          <strong>Example Payment</strong>
+        </li>
+        <li>
+          <strong>Paystack</strong>
+        </li>
+      </ol>
+    </div>`
+  },
+  {
+    element: ".languages",
+    intro: `<h2>Languages</h2>
+    <hr>
+    <div>
+      Language should never be a barrier. <br> We understand that the earth is a global village, where everyone 
+      is connected and we aim to provide our services to everyone around the world regardless of their language.<br>
+      Just click on language icon and select you preferred language from the dropdown.
+    </div>`
+  },
+  {
+    element: "#accounts",
+    intro: `<h2>Account Options</h2>
+    <hr>
+    <div>
+      Here you can access several other account related options by clicking to reveal the dropdown:
+      <ol>
+        <li>
+          <strong>Profile:</strong> view your profile, update your profile and even upgrade your account to a Vendor account
+        </li>
+        <li>
+          <strong>Wallet:</strong> Fund your wallet, transfer funds to other users wallet and more.
+        </li>
+        <li>
+          <strong>Sign-out:</strong> Though we hate to see you leave, if need arises you can always logout to keep your account 
+          safe from unathorized access. <br>
+          You can always log back in by clicking the same account button next time.
+        </li>
+        <img src= "/resources/guest_account.png" class="product-grid-item-images img-responsive">
+      </ol>
+    </div>`
+  },
+  {
+    element: ".tour",
+    intro: `<h2>Tour</h2>
+    <hr>
+    <div>
+      That's about everything. Ever need to take a tour again, you can find me here.
+    </div>`
+  }
+];
+
 const unregisteredBuyerTourSteps = [
   {
     intro: `<h2>Welcome to <strong>Reaction</strong> Commerce</h2>
@@ -104,9 +205,9 @@ export function playTour() {
   let tourSteps;
   if (Reaction.hasPermission("admin")) {
     tourSteps = adminTourSteps;
-  } // else if (!Reaction.hasPermission("anonymous")) {
-  //   tourSteps = registeredBuyerTourSteps;
-  else {
+  }  else if (!Reaction.hasPermission("anonymous")) {
+    tourSteps = registeredBuyerTourSteps;
+  } else {
     tourSteps = unregisteredBuyerTourSteps;
   }
   tour.setOptions({
