@@ -1,8 +1,8 @@
 import { FlatButton } from "/imports/plugins/core/ui/client/components";
 import { NotificationContainer } from "/imports/plugins/included/notifications/client/containers";
-import { Reaction } from "/client/api";
-import { Tags } from "/lib/collections";
-
+import { Reaction, Router } from "/client/api";
+import { Tags, Accounts } from "/lib/collections";
+import { playTour } from "/imports/plugins/included/tour/client/tour.js";
 
 Template.CoreNavigationBar.onCreated(function () {
   this.state = new ReactiveDict();
@@ -13,6 +13,17 @@ Template.CoreNavigationBar.onCreated(function () {
   } else {
     this.state.set("searchEnabled", false);
   }
+});
+
+Template.CoreNavigationBar.onRendered(function () {
+  currentRoute = Router.getRouteName();
+  this.autorun(() => {
+    if (Accounts.findOne(Meteor.userId())) {
+      if (!Accounts.findOne(Meteor.userId()).takenTour && Accounts.findOne(Meteor.userId()).emails[0]) {
+        playTour();
+      }
+    }
+  });
 });
 
 /**
@@ -54,7 +65,6 @@ Template.CoreNavigationBar.helpers({
       return instance.state.get("searchTemplate");
     }
   },
-
   IconButtonComponent() {
     return {
       component: FlatButton,
@@ -65,6 +75,16 @@ Template.CoreNavigationBar.helpers({
   notificationButtonComponent() {
     return {
       component: NotificationContainer
+    };
+  },
+  TourButtonComponent() {
+    return {
+      component: FlatButton,
+      icon: "fa fa-taxi",
+      kind: "flat",
+      onClick() {
+        playTour();
+      }
     };
   },
   onMenuButtonClick() {
