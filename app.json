@@ -1,0 +1,26 @@
+{
+  "name": "izanagi-rc",
+  "scripts": {
+  },
+  "env": {
+    "BUILDPACK_CLEAR_CACHE": {
+      "required": true
+    },
+    "MONGODB_URI": {
+      "required": true
+    },
+    "ROOT_URL": {
+      "required": true
+    }
+  },
+  "formation": {
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/swrdfish/meteor-buildpack-horse.git"
+    }
+  ]
+}
