@@ -53,6 +53,7 @@
     "lodash": "^4.17.4",
     "lodash.pick": "^4.4.0",
     "meteor-node-stubs": "^0.2.6",
+    "meteor-tools": "^1.5.0-alpha.1",
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.11",
     "nexmo": "^1.2.0",
