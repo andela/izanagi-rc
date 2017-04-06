@@ -1,5 +1,6 @@
 {
   "parser": "babel-eslint", // now for the support of allowImportExportEverywhere
+  "extends": "airbnb",
   "env": {
     "browser": true,
     "node": true,
