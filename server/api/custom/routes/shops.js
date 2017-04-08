@@ -2,7 +2,7 @@ import { Shops } from "/lib/collections";
 import { Counts } from "meteor/tmeasday:publish-counts";
 
 const shopsRoutes = (router, handler) => {
-  router.get("/api/shops", (req, res) => {
+  router.get("/api/shops/all", (req, res) => {
     handler.post(`http://${req.headers.host}/graphql`,
       { query: `
           {

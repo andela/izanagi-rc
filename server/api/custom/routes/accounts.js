@@ -1,5 +1,5 @@
 const usersRoutes = (router, handler) => {
-  router.get("/api/accounts", (req, res) => {
+  router.get("/api/accounts/all", (req, res) => {
     handler.post(`http://${req.headers.host}/graphql`,
       { query:
         `{
