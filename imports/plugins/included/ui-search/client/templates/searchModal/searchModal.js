@@ -1,7 +1,10 @@
 import _ from "lodash";
+import React from "react";
+import { DataType } from "react-taco-table";
 import { Template } from "meteor/templating";
+import { i18next } from "/client/api";
 import { ProductSearch, Tags, OrderSearch, AccountSearch } from "/lib/collections";
-import { IconButton } from "/imports/plugins/core/ui/client/components";
+import { IconButton, SortableTable } from "/imports/plugins/core/ui/client/components";
 
 /*
  * searchModal extra functions
@@ -11,6 +14,87 @@ function tagToggle(arr, val) {
     arr.push(val);
   }
   return arr;
+}
+
+/**
+ * Custom helper function for sorting the return array based on maximum price comparison
+ * @param {String} order - "asc" to sort in ascending order or "desc" to sort in descending order
+ * @param {Array} productSearchResults - Array containg all the documents returned from a Products collections
+ * @return {Array} - the passed in products array with all elements sorted based on their maximum price
+ */
+function sortByPrice(order, productSearchResults) {
+  return _.orderBy(productSearchResults, ["price.max"], [order]);
+}
+
+/**
+ * Custom helper function to sort product search results by date created (Newest Item)
+ * @param {String} order - "asc" to sort in ascending order or "desc" to sort in descending order
+ * @param {Array} productSearchResults - Array containing all the records returned from the ProductSearch collection.
+ * @return {Array} - The passed in array sorted by dateCreated.
+ */
+function sortByDateCreated(order, productSearchResults) {
+  return _.orderBy(productSearchResults,
+    value => {
+      return Date.parse(value.createdAt);
+    },
+    order);
+}
+
+/**
+ * Custom helper method to sort product search results by quantity sold.
+ * @param {String} order - specify the sort order (asc to sort in ascending and desc to sort in descending order)
+ * @param {Array} productSearchResults - Array containing all the records returned from the ProductSearch collection
+ * @return {Array} - The  produdsSearchResults array sorted accordingly.
+ */
+function sortByQuantitySold(order, productSearchResults) {
+  return _.orderBy(productSearchResults, ["quantitySold"], [order]);
+}
+
+/**
+ * Helper function for sorting the ProductSearch results based on different criterias
+ * @param {String} sortOption - Option to sort the search results (newest, desPrice, ascPrice)
+ * @param {Array} productSearchResults - Array containing the products search results to be sorted
+ * @return {Array} the productsResults sorted based on the sort option
+ */
+function sortProductSearchResults(sortOption, productSearchResults) {
+  switch (sortOption) {
+    case "ascPrice": {
+      return sortByPrice("asc", productSearchResults);
+    }
+    case "descPrice": {
+      return sortByPrice("desc", productSearchResults);
+    }
+    case "newest": {
+      return sortByDateCreated("desc", productSearchResults);
+    }
+    case "quantitySold": {
+      return sortByQuantitySold("desc", productSearchResults);
+    }
+    default: {
+      return productSearchResults;
+    }
+  }
+}
+
+/**
+ * search modal extra function to help filter the search result based on returned venddors
+ * @param{String} vendor - vendor we want to filter our search results by.
+ * @param{Array} productSearchResults - Array containing current product search results.
+ * @return{Array} Array containing products by the specified vendor
+ */
+function filterSearchByVendors(vendors, productSearchResults) {
+  if (vendors.length === 0) {
+    return productSearchResults;
+  }
+  const filteredSearchResult = [];
+  productSearchResults.forEach((product) => {
+    vendors.forEach((vendor) => {
+      if (product.vendor === vendor) {
+        filteredSearchResult.push(product);
+      }
+    });
+  });
+  return filteredSearchResult;
 }
 
 /*
@@ -24,7 +108,10 @@ Template.searchModal.onCreated(function () {
     canLoadMoreProducts: false,
     searchQuery: "",
     productSearchResults: [],
-    tagSearchResults: []
+    tagSearchResults: [],
+    filterVendors: [],
+    sortOption: "descPrice", // default sort option (descending price)
+    productSearchVendors: [] // holds all brands found
   });
 
 
@@ -45,8 +132,9 @@ Template.searchModal.onCreated(function () {
     const searchCollection = this.state.get("searchCollection") || "products";
     const searchQuery = this.state.get("searchQuery");
     const facets = this.state.get("facets") || [];
+    const sortOption = this.state.get("sortOption");
     const sub = this.subscribe("SearchResults", searchCollection, searchQuery, facets);
-
+    const filterVendors = this.state.get("filterVendors");
     if (sub.ready()) {
       /*
        * Product Search
@@ -54,10 +142,11 @@ Template.searchModal.onCreated(function () {
       if (searchCollection === "products") {
         const productResults = ProductSearch.find().fetch();
         const productResultsCount = productResults.length;
-        this.state.set("productSearchResults", productResults);
+        this.state.set("productSearchResults", filterSearchByVendors(filterVendors, sortProductSearchResults(sortOption, productResults)));
         this.state.set("productSearchCount", productResultsCount);
 
         const hashtags = [];
+        const vendors = [];
         for (const product of productResults) {
           if (product.hashtags) {
             for (const hashtag of product.hashtags) {
@@ -66,7 +155,16 @@ Template.searchModal.onCreated(function () {
               }
             }
           }
+          // populate vendors array
+          const vendor = product.vendor;
+          if (vendor) {
+            if (vendors.indexOf(vendor) === -1) {
+              vendors.push(vendor);
+            }
+          }
         }
+        this.state.set("productSearchVendors", vendors);
+
         const tagResults = Tags.find({
           _id: { $in: hashtags }
         }).fetch();
@@ -116,6 +214,92 @@ Template.searchModal.onCreated(function () {
  * searchModal helpers
  */
 Template.searchModal.helpers({
+  productOptions() {
+    const sortOptions = [{
+      label: "Highest Price", value: "Highest Price"
+    }, {
+      label: "Lowest Price", value: "Lowest Price"
+    }, {
+      label: "Newest Item", value: "Newest Item"
+    }, {
+      label: "Best Seller", value: "Best Seller"
+    }];
+    return sortOptions;
+  },
+  productSelectOptions() {
+    const instance = Template.instance();
+    return {
+      buttonClass: "btn btn-white",
+      nonSelectedText: "Check option",
+      maxHeight: 200,
+      buttonWidth: "290px",
+      dropRight: true,
+      onChange(option) {
+        const selection = $(option).val();
+        // sort in Ascending price
+        if (selection === "Highest Price") {
+          instance.state.set("sortOption", "descPrice");
+        }
+        // sort in Descending price
+        if (selection === "Lowest Price") {
+          instance.state.set("sortOption", "ascPrice");
+        }
+        // sort by Newest item (date created)
+        if (selection === "Newest Item") {
+          instance.state.set("sortOption", "newest");
+        }
+        // sort by Best seller
+        if (selection === "Best Seller") {
+          instance.state.set("sortOption", "quantitySold");
+        }
+      }
+    };
+  },
+  vendorOptions() {
+    const instance = Template.instance();
+    const templateVendors = instance.state.get("productSearchVendors");
+    const options = [];
+    templateVendors.forEach((vendor) => {
+      const option = {
+        label: vendor,
+        value: vendor
+      };
+      options.push(option);
+    });
+
+    return options;
+  },
+  vendorSelectOptions() {
+    const instance = Template.instance();
+    return {
+      buttonClass: "btn btn-white",
+      nonSelectedText: "Check option",
+      maxHeight: 200,
+      buttonWidth: "290px",
+      templates: {
+        filter: `<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon">
+        <i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>`,
+        filterClearBtn: `<span class="input-group-btn"><button class="btn btn-default multiselect-clear-filter" type="button">
+        <i class="fa fa-times"></i></button></span>`
+      },
+      selectAllText: "All Vendors",
+      enableFiltering: true,
+      enableCaseInsensitiveFiltering: true,
+      disableIfEmpty: true,
+      onChange(option, checked) {
+        const filterVendor = $(option).val();
+        if (checked) {
+          const newFilterVendors = instance.state.get("filterVendors");
+          newFilterVendors.push(filterVendor);
+          instance.state.set("filterVendors", newFilterVendors);
+        } else {
+          const newFilterVendors = instance.state.get("filterVendors");
+          newFilterVendors.splice(newFilterVendors.indexOf(filterVendor), 1);
+          instance.state.set("filterVendors", newFilterVendors);
+        }
+      }
+    };
+  },
   IconButtonComponent() {
     const instance = Template.instance();
     const view = instance.view;
@@ -123,6 +307,7 @@ Template.searchModal.helpers({
     return {
       component: IconButton,
       icon: "fa fa-times",
+      kind: "close",
       onClick() {
         $(".js-search-modal").fadeOut(400, () => {
           $("body").css("overflow", "visible");
@@ -156,6 +341,7 @@ Template.searchModal.events({
     event.preventDefault();
     const searchQuery = templateInstance.find("#search-input").value;
     templateInstance.state.set("searchQuery", searchQuery);
+    templateInstance.state.set("filterVendors", []);
     $(".search-modal-header:not(.active-search)").addClass(".active-search");
     if (!$(".search-modal-header").hasClass("active-search")) {
       $(".search-modal-header").addClass("active-search");

@@ -3,9 +3,23 @@
     <div class="rui search-modal-close">{{> React IconButtonComponent}}</div>
     <div class="rui search-modal-header">
       {{> searchInput }}
+      <div class="rui search-modal-options-container">
+        {{#if productSearchResults}}
+          {{> productSearchTags tagSearchResults=tagSearchResults }}
+        {{/if}}
+      </div>    
       {{> searchTypeToggle }}
-      {{> productSearchTags tagSearchResults=tagSearchResults }}
+    </div>  
+    <div class="row">
+      <div class="col-md-3" style="padding:10px 20px;">
+        {{#if productSearchResults}}
+          {{> productSearchSort options=productOptions selectOptions=productSelectOptions}}
+          {{> vendorFilter options=vendorOptions selectOptions=vendorSelectOptions }}
+        {{/if}}
+      </div>
+      <div class="col-md-9">
+        {{> searchResults productSearchResults=productSearchResults orderSearchResults=orderSearchResults accountSearchResults=accountSearchResults orderTable=orderTable accountTable=accountTable }}
+      </div>
     </div>
-    {{> searchResults productSearchResults=productSearchResults orderSearchResults=orderSearchResults accountSearchResults=accountSearchResults orderTable=orderTable accountTable=accountTable }}
   </div>
 </template>
