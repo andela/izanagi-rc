@@ -8,10 +8,9 @@
     {{!-- Use old product detail page --}}
     {{> productDetail }}
   {{/if}}
-</template>
 
-<template name="productDetailSimpleToolbar">
-  <div>
-    {{> React PublishContainerComponent}}
-  </div>
+  {{> disqus }}
+</template>
+<template name="disqus">
+  <div id="disqus_thread" class="container-main">{{getDisqus}}</div>
 </template>
