@@ -1,4 +1,4 @@
-/*global Template */
+/* global Template, currentRoute */
 
 import { FlatButton } from "/imports/plugins/core/ui/client/components";
 import { NotificationContainer } from "/imports/plugins/included/notifications/client/containers";
