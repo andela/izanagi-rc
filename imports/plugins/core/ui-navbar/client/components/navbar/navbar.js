@@ -1,8 +1,11 @@
+/*global Template */
+
 import { FlatButton } from "/imports/plugins/core/ui/client/components";
 import { NotificationContainer } from "/imports/plugins/included/notifications/client/containers";
 import { Reaction, Router } from "/client/api";
 import { Tags, Accounts } from "/lib/collections";
 import { playTour } from "/imports/plugins/included/tour/client/tour.js";
+import { Meteor } from "meteor/meteor";
 
 Template.CoreNavigationBar.onCreated(function () {
   this.state = new ReactiveDict();
