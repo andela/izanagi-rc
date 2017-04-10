@@ -20,6 +20,8 @@
     "destructuring": true,
     "forOf": true,
     "generators": false,
+    "import/no-unresolved": 0,
+    "no-undef": 0,
     "modules": true,
     "objectLiteralComputedProperties": true,
     "objectLiteralDuplicateProperties": false,
