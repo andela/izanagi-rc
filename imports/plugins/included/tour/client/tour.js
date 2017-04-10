@@ -354,7 +354,7 @@ export function playTour() {
   let tourSteps;
   if (Reaction.hasPermission("admin")) {
     tourSteps = adminTourSteps;
-  }  else if (!Reaction.hasPermission("anonymous")) {
+  } else if (!Reaction.hasPermission("anonymous")) {
     tourSteps = registeredBuyerTourSteps;
   } else {
     tourSteps = unregisteredBuyerTourSteps;
