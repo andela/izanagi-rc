@@ -11,18 +11,18 @@ Template.productDetailSimple.helpers({
   }
 });
 
-// Template.productDetailSimpleToolbar.helpers({
-//   PublishContainerComponent() {
-//     return {
-//       component: PublishContainer
-//     };
-//   }
-// });
+Template.productDetailSimpleToolbar.helpers({
+  PublishContainerComponent() {
+    return {
+      component: PublishContainer
+    };
+  }
+});
 
 Template.disqus.helpers({
   getDisqus() {
     const script = document.createElement("script");
-    script.src = "//izanagi-rc.disqus.com/embed.js";
+    script.src = "https://izanagi-rc.disqus.com/embed.js";
     script.setAttribute("data-timestamp", + new Date());
     (document.head || document.body).appendChild(script);
   }
