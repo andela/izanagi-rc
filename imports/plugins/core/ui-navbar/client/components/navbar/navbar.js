@@ -1,5 +1,5 @@
 /* global Template */
-/* global currentRoute */
+/* eslint-disable no-undef */
 
 import { FlatButton } from "/imports/plugins/core/ui/client/components";
 import { NotificationContainer } from "/imports/plugins/included/notifications/client/containers";
