@@ -1,10 +1,8 @@
 import _ from "lodash";
-import React from "react";
-import { DataType } from "react-taco-table";
+
 import { Template } from "meteor/templating";
-import { i18next } from "/client/api";
 import { ProductSearch, Tags, OrderSearch, AccountSearch } from "/lib/collections";
-import { IconButton, SortableTable } from "/imports/plugins/core/ui/client/components";
+import { IconButton } from "/imports/plugins/core/ui/client/components";
 
 /*
  * searchModal extra functions
@@ -157,6 +155,7 @@ Template.searchModal.onCreated(function () {
           }
           // populate vendors array
           const vendor = product.vendor;
+          console.log(vendor);
           if (vendor) {
             if (vendors.indexOf(vendor) === -1) {
               vendors.push(vendor);
