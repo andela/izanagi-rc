@@ -21,7 +21,7 @@ tracker@1.1.2                 # Meteor transparent reactive programming library
 mongo@1.1.16
 random@1.0.10
 reactive-var@1.0.11
-reactive-dict
+reactive-dict@1.1.8
 check@1.2.5
 http@1.2.12
 ddp-rate-limiter@1.0.7
