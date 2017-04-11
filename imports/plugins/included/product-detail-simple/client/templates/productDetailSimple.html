@@ -9,11 +9,7 @@
     {{> productDetail }}
   {{/if}}
 
-  {{#if currentUser}}
-    <div>
-      {{> disqus }}
-    </div>
-  {{/if}}
+  {{> disqus }}
 </template>
 
 <template name="productDetailSimpleToolbar">
@@ -23,6 +19,5 @@
 </template>
 
 <template name="disqus">
-
   <div id="disqus_thread" class="container-main">{{getDisqus}}</div>
 </template>
