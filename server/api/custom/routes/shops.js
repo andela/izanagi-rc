@@ -1,3 +1,4 @@
+import { Meteor } from "meteor/meteor";
 import { Shops } from "/lib/collections";
 import { Counts } from "meteor/tmeasday:publish-counts";
 
