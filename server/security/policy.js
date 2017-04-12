@@ -23,7 +23,14 @@ if (process.env.NODE_ENV === "development") {
   BrowserPolicy.content.allowConnectOrigin("http://localhost:*");
   BrowserPolicy.content.allowConnectOrigin("https://localhost:*");
   BrowserPolicy.framing.allowAll();
+
+  BrowserPolicy.content.allowOriginForAll("*.disqus.com");
+  BrowserPolicy.content.allowOriginForAll("https://disqus.com");
+  BrowserPolicy.content.allowOriginForAll("http://disqus.com");
+  BrowserPolicy.content.allowOriginForAll("https://a.disquscdn.com");
+  BrowserPolicy.content.allowEval("*.disqus.com");
 }
+
 
 // get current hostname of app
 const { hostname } = url.parse(Meteor.absoluteUrl());
@@ -36,6 +43,16 @@ BrowserPolicy.content.allowOriginForAll("*.facebook.com");
 BrowserPolicy.content.allowOriginForAll("*.fbcdn.net");
 BrowserPolicy.content.allowOriginForAll("connect.facebook.net");
 BrowserPolicy.content.allowOriginForAll("*.googleusercontent.com");
+
+BrowserPolicy.content.allowOriginForAll("*.disqus.com");
+BrowserPolicy.content.allowOriginForAll("https://disqus.com");
+BrowserPolicy.content.allowOriginForAll("http://disqus.com");
+BrowserPolicy.content.allowOriginForAll("https://a.disquscdn.com");
+BrowserPolicy.content.allowEval("*.disqus.com");
+
+BrowserPolicy.content.allowOriginForAll("*.twitter.com");
+BrowserPolicy.content.allowOriginForAll("cdn.syndication.twimg.com");
+BrowserPolicy.content.allowOriginForAll("*.twimg.com");
 
 BrowserPolicy.content.allowImageOrigin("fbcdn-profile-a.akamaihd.net");
 BrowserPolicy.content.allowImageOrigin("secure.gravatar.com");
@@ -50,3 +67,5 @@ BrowserPolicy.content.allowOriginForAll("fonts.gstatic.com");
 
 BrowserPolicy.content.allowOriginForAll("enginex.kadira.io");
 BrowserPolicy.content.allowOriginForAll("*.stripe.com");
+
+
