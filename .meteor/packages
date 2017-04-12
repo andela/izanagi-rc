@@ -101,3 +101,5 @@ google-config-ui
 twitter-config-ui
 simple:rest
 simple:json-routes
+mizzao:autocomplete
+
