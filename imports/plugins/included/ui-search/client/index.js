@@ -16,6 +16,9 @@ import "./templates/productSearch/content.html";
 import "./templates/productSearch/content.js";
 import "./templates/productSearch/notice.html";
 import "./templates/productSearch/notice.js";
+import "./templates/productSearch/productSearchSort.html";
+import "./templates/productSearch/vendorFilter.html";
+
 
 // Order Search
 import "./templates/orderSearch/orderResults.html";

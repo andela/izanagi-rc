@@ -91,6 +91,7 @@ jparker:crypto-core@0.1.0
 jparker:crypto-md5@0.1.1
 jparker:gravatar@0.5.1
 jquery@1.11.10
+jss:bootstrap-multi-select@0.0.2
 juliancwirko:postcss@1.2.0
 juliancwirko:s-alert@3.2.0
 juliancwirko:s-alert-stackslide@3.1.3
