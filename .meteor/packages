@@ -100,5 +100,7 @@ facebook-config-ui
 google-config-ui
 twitter-config-ui
 jss:bootstrap-multi-select@=0.0.2
+simple:rest
+simple:json-routes
 mizzao:autocomplete
 

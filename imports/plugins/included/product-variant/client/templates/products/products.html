@@ -22,7 +22,8 @@
       <div class="spinner"></div>
     </div>
   {{/if}}
-
+  <hr>
+   {{> socialTimeline }}
 
 </template>
 
@@ -32,5 +33,42 @@
     {{#if hasPermission "createProduct"}}
       {{>productList}}
     {{/if}}
+  </div>
+</template>
+
+<template name="socialTimeline">
+  <style>
+    .social {
+      padding: 20px 60px 20px 60px;
+    }
+    iframe {
+      width: 100% !important;
+      margin: 0 auto;
+    }
+    .pad {
+      margin: 10px;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.12), 0 1px 1px rgba(0,0,0,0.24);
+      transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    }
+  </style>
+  <div class="container social">
+    <h2 class="text-center">Social Timelines</h2>
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div id="pad" class="pad">
+          {{#if facebook}}
+            <iframe src={{facebook}} width="340" height="400" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+          {{/if}}
+        </div>
+      </div>
+      {{#if twitter}}
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+          <div class="pad">
+            <a class="twitter-timeline" href="{{twitter}}" data-width="auto" data-height="400">Tweets by {{twitter}}</a>
+            <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+          </div>
+        </div>
+      {{/if}}
+    </div>
   </div>
 </template>

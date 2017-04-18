@@ -1,10 +1,11 @@
 import { Reaction } from "/client/api";
 import { ReactionProduct } from "/lib/api";
 import { applyProductRevision } from "/lib/api/products";
-import { Products, Tags } from "/lib/collections";
+import { Products, Tags, Packages } from "/lib/collections";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 import { ITEMS_INCREMENT } from "/client/config/defaults";
+import { ReactiveDict } from "meteor/reactive-dict";
 
 /**
  * loadMoreProducts
@@ -182,4 +183,38 @@ Template.products.events({
     event.preventDefault();
     loadMoreProducts();
   }
+});
+
+Template.socialTimeline.onCreated(function () {
+  this.state = new ReactiveDict();
+  this.state.setDefault({
+    timeline: {}
+  });
+
+  this.autorun(() => {
+    this.subscribe("Packages");
+    const socialConfig = Packages.findOne({
+      name: "reaction-social"
+    });
+    this.state.set("timeline", socialConfig.settings.public.apps);
+  });
+});
+
+Template.socialTimeline.helpers({
+  twitter() {
+    const twitterConfig = Template.instance().state.get("timeline").twitter;
+    if (twitterConfig.enabled && twitterConfig.profilePage) {
+      return twitterConfig.profilePage;
+    }
+    return false;
+  },
+  facebook() {
+    const facebookConfig = Template.instance().state.get("timeline").facebook;
+    if (facebookConfig.enabled && facebookConfig.appId && facebookConfig.profilePage) {
+      const index = facebookConfig.profilePage.lastIndexOf("/");
+      return `https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2F${facebookConfig.profilePage.substr(index)}&tabs=timeline&width=1000&height=400&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true&appId=${facebookConfig.appId}`;
+    }
+    return false;
+  }
+
 });
