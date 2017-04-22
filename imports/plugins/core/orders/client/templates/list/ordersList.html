@@ -19,11 +19,7 @@
           </strong>
         </div>
         <div class="col-xs-6 col-sm-10">
-          {{#if orderStatus}}
-              <span data-i18n="order.completed">Completed</span>
-          {{else}}
-              <span data-i18n="order.processing">Processing</span>
-          {{/if}}
+          {{ orderStatus}}
         </div>
       </div>
 
@@ -99,7 +95,13 @@
     <div class="panel-footer">
       {{> ordersListSummary order=.}}
     </div>
+    {{#if hasComment}}
+     <div class="panel-footer">
+       {{> ordersListComment comments=comments}}
+     </div>
+     {{/if}}
   </div>
+  
 
 {{else}}
   <div class="alert alert-info">
@@ -107,3 +109,14 @@
   </div>
 {{/each}}
 </template>
+
+<template name="ordersListComment">
+   <div>
+     <strong>Comments</strong>
+     {{#each comments}}
+       <div>
+         <p><b>{{dateFormat createdAt format="MMM D h:mm"}}</b> - {{body}}</p>
+       </div>
+     {{/each}}
+   </div>
+ </template>
