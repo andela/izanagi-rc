@@ -10,13 +10,12 @@
           <label for="comment">Reason for Cancelling Order</label>
             <select class="form-control input-comment" id="comment" style="text-align-last: center;">
               <option selected disabled>Select One</option>
+              <option>Suspected Fraud</option>
               <option>Failed delivery</option>
-              <option>Damaged</option>
-              <option>Wrong Item</option>
-              <option>Customer Changed Mind</option>
-              <option>Item out of stock</option>             
+              <option>Damaged Product</option>
+              <option>Natural Disaster</option>
+              <option>Logistics Breakdown</option>             
             </select>
-          <!-- <textarea name="comment" class="form-control input-comment"></textarea> -->
           {{#if hasError messages.errors.comment}}
             <span class="help-block">
               {{messages.errors.comment.reason}}
