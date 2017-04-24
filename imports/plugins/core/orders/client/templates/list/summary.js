@@ -2,7 +2,8 @@ import { NumericInput } from "/imports/plugins/core/ui/client/components";
 import { Logger } from "/client/api";
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
-import { Reaction } from '/client/api/index';
+import { Reaction } from "/client/api/index";
+import { ReactiveDict } from "meteor/reactive-dict";
 
 
 Template.ordersListSummary.onCreated(function () {
@@ -71,7 +72,7 @@ Template.ordersListSummary.events({
       updatedAt: new Date()
     };
 
-
+    /* eslint-disable no-undef*/
     Alerts.alert({
       title: "You are about to cancel the order you just placed!",
       showCancelButton: true,

@@ -38,7 +38,7 @@ Template.coreOrderCancelOrder.onCreated(function () {
 });
 
 Template.coreOrderCancelOrder.events({
-  "submit form[name=cancelOrderForm]"(event, template) {
+  "submit form[name=cancelOrderForm]": (event, template) => {
     event.preventDefault();
 
     const commentInput = template.$(".input-comment option:selected");
@@ -57,7 +57,7 @@ Template.coreOrderCancelOrder.events({
 
     if ($.isEmptyObject(errors) === false) {
       templateInstance.formMessages.set({
-        errors: errors
+        errors
       });
       // prevent order cancel
       return;

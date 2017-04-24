@@ -351,7 +351,7 @@ Template.orderStatusDetail.helpers({
     return i18next.t("orderShipping.noTracking");
   },
 
-  orderStatus: function () {
+  orderStatus() {
     return this.workflow.status;
   },
 
