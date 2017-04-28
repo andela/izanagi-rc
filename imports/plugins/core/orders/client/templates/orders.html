@@ -58,6 +58,15 @@
       <div class="order-panel-items">
         {{> ordersListItems order=order currencyFormat=currencyFormat}}
       </div>
+
+    {{#if isCancelled order }}
+      <div style="text-align:center;" >
+        Reason for Cancelled Order: 
+        <span class="badge badge-danger">
+         {{ cancelledReason order }}
+        </span>
+      </div>
+      {{/if}}
     </div>
 
     <div class="controls">
