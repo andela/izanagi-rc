@@ -1,7 +1,8 @@
 import _ from "lodash";
 import { Template } from "meteor/templating";
-import { Orders } from "/lib/collections";
+import { Orders, ProductSearch } from "/lib/collections";
 import { formatPriceString } from "/client/api";
+import { ReactiveDict } from "meteor/reactive-dict";
 
 /**
  * Function to fetch the total of all sales made
@@ -53,31 +54,19 @@ function extractAnalyticsItems(allOrders) {
       }
     });
   });
-
   const latestOrder = _.maxBy(allOrders, (order) => {
-    console.log('ORDER ===', order)
     return Date.parse(order.createdAt);
   });
   const oldestOrder = _.minBy(allOrders, (order) => {
     return Date.parse(order.createdAt);
   });
-  const difference = daysDifference(Date.parse(oldestOrder.createdAt), Date.parse(latestOrder.createdAt));
-  const salesPerDay = totalSales / difference;
+  let salesPerDay = 0;
+  if (oldestOrder && latestOrder) {
+    const difference = daysDifference(Date.parse(oldestOrder.createdAt), Date.parse(latestOrder.createdAt));
+    salesPerDay = difference === 0 ? totalSales : totalSales / difference;
+  }
   return {totalSales, totalItemsPurchased, totalShippingCost, salesPerDay, analytics, analyticsStatement, ordersAnalytics};
 }
-
-
-/**
- * Helper function to fetch the total number of items purchased
- * from all orders
-function extractTotalItemsPurchased(allOrders) {
-  let totalItems = 0;
-  allOrders.forEach((order) => {
-    totalItems += order.items.length;
-  });
-  return totalItems;
-}
-*/
 
 /**
  * Helper function to calculate the differnce (in days)
@@ -94,32 +83,47 @@ function daysDifference(date1, date2) {
   // Convert back to days and return
   return Math.round(difference / oneDay);
 }
-
 Template.actionableAnalytics.onCreated(function () {
   this.state = new ReactiveDict();
   this.state.setDefault({
     ordersPlaced: 0,
     totalSales: 0,
     totalItemsPurchased: 0,
-    totalShippingCost: formatPriceString(0),
-    salesPerDay: 0, 
+    totalShippingCost: 0,
+    salesPerDay: 0,
     analytics: {},
     analyticsStatement: {},
-    ordersAnalytics: []
+    ordersAnalytics: [],
+    productsAnalytics: []
   });
   this.autorun(() => {
-    const sub = this.subscribe("Orders");
-    if (sub.ready()) {
+    const orderSub = Meteor.subscribe("Orders");
+    const productSub = Meteor.subscribe("searchresults/actionableAnalytics");
+    if (orderSub.ready()) {
       const allOrders = Orders.find().fetch();
-      console.log('All orders ===> ', allOrders);
-      const analyticsItems = extractAnalyticsItems(allOrders);
-      this.state.set("totalSales", analyticsItems.totalSales);
-      this.state.set("totalItemsPurchased", analyticsItems.totalItemsPurchased);
-      this.state.set("salesPerDay", formatPriceString(analyticsItems.salesPerDay));
-      this.state.set("totalShippingCost", formatPriceString(analyticsItems.totalShippingCost));
-      this.state.set("analytics", analyticsItems.analytics);
-      this.state.set("analyticsStatement", analyticsItems.analyticsStatement);
-      this.state.set("ordersAnalytics", analyticsItems.ordersAnalytics);
+      if (allOrders) {
+        const analyticsItems = extractAnalyticsItems(allOrders);
+        this.state.set("ordersPlaced", allOrders.length);
+        this.state.set("totalSales", analyticsItems.totalSales);
+        this.state.set("totalItemsPurchased", analyticsItems.totalItemsPurchased);
+        this.state.set("salesPerDay", analyticsItems.salesPerDay);
+        this.state.set("totalShippingCost", analyticsItems.totalShippingCost);
+        this.state.set("analytics", analyticsItems.analytics);
+        this.state.set("analyticsStatement", analyticsItems.analyticsStatement);
+        this.state.set("ordersAnalytics", analyticsItems.ordersAnalytics);
+      }
+      orderSub.stop();
+      if (productSub.ready()) {
+        const products = ProductSearch.find({isVisible: true}, {
+          views: 1,
+          title: 1,
+          quantitySold: 1
+        }).fetch();
+        if (products) {
+          this.state.set("productsAnalytics", products);
+        }
+      }
+      productSub.stop();
     }
   });
 });
@@ -140,17 +144,17 @@ Template.actionableAnalytics.helpers({
   },
   totalShippingCost() {
     const instance = Template.instance();
-    return instance.state.get("totalShippingCost");
+    return formatPriceString(instance.state.get("totalShippingCost"));
   },
   salesPerDay() {
     const instance = Template.instance();
-    return instance.state.get("salesPerDay");
+    return formatPriceString(instance.state.get("salesPerDay"));
   },
   bestSelling() {
     const products = [];
     const instance = Template.instance();
     const analytics = instance.state.get("analytics");
-    for (key in analytics) {
+    for (const key in analytics) {
       if (key) {
         products.push({
           product: key,
@@ -170,7 +174,7 @@ Template.actionableAnalytics.helpers({
     const products = [];
     const instance = Template.instance();
     const analytics = instance.state.get("analytics");
-    for (key in analytics) {
+    for (const key in analytics) {
       if (key) {
         products.push({
           product: key,
@@ -191,7 +195,7 @@ Template.actionableAnalytics.helpers({
     const statements = [];
     const instance = Template.instance();
     const analyticsStatement = instance.state.get("analyticsStatement");
-    for (key in analyticsStatement) {
+    for (const key in analyticsStatement) {
       if (key) {
         statements.push(analyticsStatement[key]);
         analyticsStatement[key].totalSales = formatPriceString(analyticsStatement[key].totalSales);
@@ -213,6 +217,16 @@ Template.actionableAnalytics.helpers({
         order.taxes = formatPriceString(order.taxes);
         order.shipping = formatPriceString(order.shipping);
         return Date.parse(order.date);
+      },
+      "desc"
+    );
+  },
+  products() {
+    const instance = Template.instance();
+    const productsAnalytics = instance.state.get("productsAnalytics");
+    return _.orderBy(productsAnalytics,
+      (product) => {
+        return product.views;
       },
       "desc"
     );
