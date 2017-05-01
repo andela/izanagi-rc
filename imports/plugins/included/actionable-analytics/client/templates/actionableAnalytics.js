@@ -8,12 +8,24 @@ import { formatPriceString } from "/client/api";
  * @param {Array} allOrders - Array containing all the orders
  * @return {Object} - an Object containing the necessary overview details
  */
-function extractOverviewItems(allOrders) {
+function extractAnalyticsItems(allOrders) {
   let totalSales = 0;
   let totalItemsPurchased = 0;
   let totalShippingCost = 0;
   const analytics = {};
+  const analyticsStatement = {};
+  const ordersAnalytics = [];
   allOrders.forEach((order) => {
+    const orderDate = order.createdAt;
+    const dateString = orderDate.toISOString().split("T")[0];
+    ordersAnalytics.push({
+      date: dateString,
+      country: order.billing[0].address.region,
+      city: order.billing[0].address.city,
+      paymentProcessor: order.billing[0].paymentMethod.processor,
+      shipping: order.billing[0].invoice.shipping,
+      taxes: order.billing[0].invoice.taxes
+    });
     totalSales += order.billing[0].invoice.subtotal;
     totalItemsPurchased += order.items.length;
     totalShippingCost += order.billing[0].invoice.shipping;
@@ -27,10 +39,23 @@ function extractOverviewItems(allOrders) {
           totalSales: item.variants.price
         };
       }
+      const uniqueStamp = `${dateString}::${item.title}`;
+      if (analyticsStatement[uniqueStamp] && analyticsStatement[uniqueStamp].title === item.title) {
+        analyticsStatement[uniqueStamp].totalSales += item.variants.price;
+        analyticsStatement[uniqueStamp].quantity += item.quantity;
+      } else {
+        analyticsStatement[uniqueStamp] = {
+          title: item.title,
+          quantity: item.quantity,
+          dateString,
+          totalSales: item.variants.price
+        };
+      }
     });
   });
 
   const latestOrder = _.maxBy(allOrders, (order) => {
+    console.log('ORDER ===', order)
     return Date.parse(order.createdAt);
   });
   const oldestOrder = _.minBy(allOrders, (order) => {
@@ -38,7 +63,7 @@ function extractOverviewItems(allOrders) {
   });
   const difference = daysDifference(Date.parse(oldestOrder.createdAt), Date.parse(latestOrder.createdAt));
   const salesPerDay = totalSales / difference;
-  return {totalSales, totalItemsPurchased, totalShippingCost, salesPerDay, analytics};
+  return {totalSales, totalItemsPurchased, totalShippingCost, salesPerDay, analytics, analyticsStatement, ordersAnalytics};
 }
 
 
@@ -78,19 +103,23 @@ Template.actionableAnalytics.onCreated(function () {
     totalItemsPurchased: 0,
     totalShippingCost: formatPriceString(0),
     salesPerDay: 0, 
-    analytics: {}
+    analytics: {},
+    analyticsStatement: {},
+    ordersAnalytics: []
   });
   this.autorun(() => {
     const sub = this.subscribe("Orders");
     if (sub.ready()) {
       const allOrders = Orders.find().fetch();
-      const overviewItems = extractOverviewItems(allOrders);
-      this.state.set("ordersPlaced", allOrders.length);
-      this.state.set("totalSales", overviewItems.totalSales);
-      this.state.set("totalItemsPurchased", overviewItems.totalItemsPurchased);
-      this.state.set("salesPerDay", formatPriceString(overviewItems.salesPerDay));
-      this.state.set("totalShippingCost", formatPriceString(overviewItems.totalShippingCost));
-      this.state.set("analytics", overviewItems.analytics);
+      console.log('All orders ===> ', allOrders);
+      const analyticsItems = extractAnalyticsItems(allOrders);
+      this.state.set("totalSales", analyticsItems.totalSales);
+      this.state.set("totalItemsPurchased", analyticsItems.totalItemsPurchased);
+      this.state.set("salesPerDay", formatPriceString(analyticsItems.salesPerDay));
+      this.state.set("totalShippingCost", formatPriceString(analyticsItems.totalShippingCost));
+      this.state.set("analytics", analyticsItems.analytics);
+      this.state.set("analyticsStatement", analyticsItems.analyticsStatement);
+      this.state.set("ordersAnalytics", analyticsItems.ordersAnalytics);
     }
   });
 });
@@ -154,6 +183,36 @@ Template.actionableAnalytics.helpers({
       products,
       (product) => {
         return product.salesSorter;
+      },
+      "desc"
+    );
+  },
+  statements() {
+    const statements = [];
+    const instance = Template.instance();
+    const analyticsStatement = instance.state.get("analyticsStatement");
+    for (key in analyticsStatement) {
+      if (key) {
+        statements.push(analyticsStatement[key]);
+        analyticsStatement[key].totalSales = formatPriceString(analyticsStatement[key].totalSales);
+      }
+    }
+    return _.orderBy(
+      statements,
+      (statement) => {
+        return Date.parse(statement.dateString);
+      },
+      "desc");
+  },
+  orders() {
+    const instance = Template.instance();
+    const orders = instance.state.get("ordersAnalytics");
+    return _.orderBy(
+      orders,
+      (order) => {
+        order.taxes = formatPriceString(order.taxes);
+        order.shipping = formatPriceString(order.shipping);
+        return Date.parse(order.date);
       },
       "desc"
     );
