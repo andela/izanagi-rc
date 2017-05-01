@@ -12,10 +12,22 @@ function extractOverviewItems(allOrders) {
   let totalSales = 0;
   let totalItemsPurchased = 0;
   let totalShippingCost = 0;
+  const analytics = {};
   allOrders.forEach((order) => {
     totalSales += order.billing[0].invoice.subtotal;
     totalItemsPurchased += order.items.length;
     totalShippingCost += order.billing[0].invoice.shipping;
+    order.items.forEach((item) => {
+      if (analytics[item.title]) {
+        analytics[item.title].quantitySold += item.quantity;
+        analytics[item.title].totalSales += item.variants.price;
+      } else {
+        analytics[item.title] = {
+          quantitySold: item.quantity,
+          totalSales: item.variants.price
+        };
+      }
+    });
   });
 
   const latestOrder = _.maxBy(allOrders, (order) => {
@@ -26,7 +38,7 @@ function extractOverviewItems(allOrders) {
   });
   const difference = daysDifference(Date.parse(oldestOrder.createdAt), Date.parse(latestOrder.createdAt));
   const salesPerDay = totalSales / difference;
-  return {totalSales, totalItemsPurchased, totalShippingCost, salesPerDay};
+  return {totalSales, totalItemsPurchased, totalShippingCost, salesPerDay, analytics};
 }
 
 
@@ -65,7 +77,8 @@ Template.actionableAnalytics.onCreated(function () {
     totalSales: 0,
     totalItemsPurchased: 0,
     totalShippingCost: formatPriceString(0),
-    salesPerDay: 0
+    salesPerDay: 0, 
+    analytics: {}
   });
   this.autorun(() => {
     const sub = this.subscribe("Orders");
@@ -77,6 +90,7 @@ Template.actionableAnalytics.onCreated(function () {
       this.state.set("totalItemsPurchased", overviewItems.totalItemsPurchased);
       this.state.set("salesPerDay", formatPriceString(overviewItems.salesPerDay));
       this.state.set("totalShippingCost", formatPriceString(overviewItems.totalShippingCost));
+      this.state.set("analytics", overviewItems.analytics);
     }
   });
 });
@@ -102,5 +116,46 @@ Template.actionableAnalytics.helpers({
   salesPerDay() {
     const instance = Template.instance();
     return instance.state.get("salesPerDay");
+  },
+  bestSelling() {
+    const products = [];
+    const instance = Template.instance();
+    const analytics = instance.state.get("analytics");
+    for (key in analytics) {
+      if (key) {
+        products.push({
+          product: key,
+          quantitySold: analytics[key].quantitySold
+        });
+      }
+    }
+    return _.orderBy(
+      products,
+      (product) => {
+        return product.quantitySold;
+      },
+      "desc"
+    );
+  },
+  topEarning() {
+    const products = [];
+    const instance = Template.instance();
+    const analytics = instance.state.get("analytics");
+    for (key in analytics) {
+      if (key) {
+        products.push({
+          product: key,
+          salesSorter: analytics[key].totalSales,
+          totalSales: formatPriceString(analytics[key].totalSales)
+        });
+      }
+    }
+    return _.orderBy(
+      products,
+      (product) => {
+        return product.salesSorter;
+      },
+      "desc"
+    );
   }
 });
