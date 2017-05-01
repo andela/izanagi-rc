@@ -4,19 +4,19 @@ import { expect } from "meteor/practicalmeteor:chai";
 import { sinon } from "meteor/practicalmeteor:sinon";
 import { StripeApi } from "./stripeapi";
 
-describe("stripe/refunds/list", function () {
+describe("stripe/refunds/list", () => {
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
   it("should call StripeApi.methods.listRefunds with the proper parameters and return a properly" +
-    "formatted list of refunds", function (done) {
+    "formatted list of refunds", (done) => {
     const paymentMethod = {
       processor: "Stripe",
       storedCard: "Visa 4242",
@@ -51,29 +51,27 @@ describe("stripe/refunds/list", function () {
       has_more: false,
       url: "/v1/refunds"
     };
-    sandbox.stub(StripeApi.methods.listRefunds, "call", function () {
-      return stripeRefundListResult;
-    });
+    sandbox.stub(StripeApi.methods.listRefunds, "call", () => stripeRefundListResult);
     // spyOn(StripeApi.methods.listRefunds, "call").and.returnValue(stripeRefundListResult);
 
     let refundListResult = null;
     let refundListError = null;
-    Meteor.call("stripe/refund/list", paymentMethod, function (error, result) {
+    Meteor.call("stripe/refund/list", paymentMethod, (error, result) => {
       refundListResult = result;
       refundListError = error;
-    });
 
-    expect(refundListError).to.be.undefined;
-    expect(refundListResult).to.not.be.undefined;
-    expect(refundListResult.length).to.equal(1);
-    expect(refundListResult[0].type).to.equal("refund");
-    expect(refundListResult[0].amount).to.equal(19.99);
-    expect(refundListResult[0].currency).to.equal("usd");
+      expect(refundListError).to.be.undefined;
+      expect(refundListResult).to.not.be.undefined;
+      expect(refundListResult.length).to.equal(1);
+      expect(refundListResult[0].type).to.equal("refund");
+      expect(refundListResult[0].amount).to.equal(19.99);
+      expect(refundListResult[0].currency).to.equal("usd");
 
-    expect(StripeApi.methods.listRefunds.call).to.have.been.calledWith({
-      transactionId: paymentMethod.transactionId
+      expect(StripeApi.methods.listRefunds.call).to.have.been.calledWith({
+        transactionId: paymentMethod.transactionId
+      });
+      done();
     });
-    done();
   });
 });
 

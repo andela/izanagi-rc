@@ -1,6 +1,7 @@
 import moment from "moment";
 import { Template } from "meteor/templating";
 import { Orders, Shops } from "/lib/collections";
+import { i18next } from "/client/api";
 
 /**
  * dashboardOrdersList helpers
@@ -8,9 +9,12 @@ import { Orders, Shops } from "/lib/collections";
  */
 Template.dashboardOrdersList.helpers({
   orderStatus() {
-    if (this.workflow.status === "coreOrderCompleted") {
-      return true;
+    if (this.workflow.status === "coreOrderWorkflow/completed") {
+      return i18next.t("order.completed");
+    } else if (this.workflow.status === "cancelled") {
+      return "Cancelled";
     }
+    return i18next.t("order.processing");
   },
   orders(data) {
     if (data.hash.data) {
@@ -32,5 +36,8 @@ Template.dashboardOrdersList.helpers({
   shopName() {
     const shop = Shops.findOne(this.shopId);
     return shop !== null ? shop.name : void 0;
+  },
+  hasComment() {
+    return this.comment !== "Select One";
   }
 });

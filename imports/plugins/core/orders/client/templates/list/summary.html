@@ -63,5 +63,21 @@
       </div>
     </div>
 
+    {{#if hasAdminAccess}}
+    <div></div>
+    {{else}}
+      {{#if orderStatus}}
+      <div></div>
+      {{else}}      
+      <div class= "panel-body">
+      <button name="cancel" class="btn btn-danger btn-block"
+      type="submit" data-event-action="cancelOrder"
+      data-i18n="order.cancelOrder">Cancel Order</button>
+      <label>Reason for canceling order</label>
+           <textarea name="comment" class="form-control input-comment"></textarea>
+      </div>
+      {{/if}}
+    {{/if}}
+
   </div>
 </template>

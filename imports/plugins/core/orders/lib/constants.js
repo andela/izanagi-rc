@@ -36,4 +36,7 @@ export const orderFilters = [{
 }, {
   name: "completed",
   label: "Completed"
+}, {
+  name: "cancelled",
+  label: "Cancelled"
 }];

@@ -4,18 +4,18 @@ import { expect } from "meteor/practicalmeteor:chai";
 import { sinon } from "meteor/practicalmeteor:sinon";
 import { BraintreeApi } from "./braintreeApi";
 
-describe("braintree/refund/create", function () {
+describe("braintree/refund/create", () => {
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
-  it("Should call braintree/refund/create with the proper parameters and return saved = true", function (done) {
+  it("Should call braintree/refund/create with the proper parameters and return saved = true", (done) => {
     const paymentMethod = {
       processor: "Braintree",
       storedCard: "VISA 4242",
@@ -51,7 +51,7 @@ describe("braintree/refund/create", function () {
       }
     };
 
-    sandbox.stub(BraintreeApi.apiCall, "createRefund", function () {
+    sandbox.stub(BraintreeApi.apiCall, "createRefund", () => {
       return braintreeRefundResult;
     });
 
@@ -60,15 +60,13 @@ describe("braintree/refund/create", function () {
     let refundError = null;
 
 
-    Meteor.call("braintree/refund/create", paymentMethod, paymentMethod.amount, function (error, result) {
+    Meteor.call("braintree/refund/create", paymentMethod, paymentMethod.amount, (error, result) => {
       refundResult = result;
       refundError = error;
+      expect(refundError).to.be.undefined;
+      expect(refundResult).to.not.be.undefined;
+      expect(refundResult.saved).to.be.true;
+      return done();
     });
-
-
-    expect(refundError).to.be.undefined;
-    expect(refundResult).to.not.be.undefined;
-    expect(refundResult.saved).to.be.true;
-    done();
   });
 });

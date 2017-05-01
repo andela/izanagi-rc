@@ -34,6 +34,8 @@ Template.cartCompleted.helpers({
         return i18next.t("cartCompleted.processing");
       case "coreOrderWorkflow/completed":
         return i18next.t("cartCompleted.completed");
+      case "coreOrderWorkflow/cancelled":
+        return i18next.t("cartCompleted.cancelled");
       default:
         return this.workflow.status;
     }
