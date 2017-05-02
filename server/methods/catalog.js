@@ -1273,23 +1273,5 @@ Meteor.methods({
 
     // if collection updated we return new `isVisible` state
     return res === 1 && !product.isVisible;
-  },
-
-  /**
-   * update the number of times a product has been viewed (for analytics purposes)
-   * @param{String} handle - handle of the product views to be updated
-   * @return{Object} - Updated product
-   */
-  "products/updateViews": (handle) => {
-    check(handle, String);
-    const product = Products.findOne({handle: handle});
-    let result;
-    let view = product.views || 0;
-    if (product) {
-      view += 1;
-      const productUpdate = Object.assign({}, product, {views: view});
-      result = Products.upsert(product._id, {$set: productUpdate}, {validate: false});
-    }
-    return result;
   }
 });
