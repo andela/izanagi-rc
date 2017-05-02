@@ -1,8 +1,9 @@
 import _ from "lodash";
 import { Template } from "meteor/templating";
-import { Orders, ProductSearch } from "/lib/collections";
+import { Orders } from "/lib/collections";
 import { formatPriceString } from "/client/api";
 import { ReactiveDict } from "meteor/reactive-dict";
+import $ from "jquery";
 
 /**
  * Function to fetch the total of all sales made
@@ -59,7 +60,7 @@ function extractAnalyticsItems(allOrders) {
       ordersCancelled += 1;
     }
   });
-  return {totalSales, totalItemsPurchased, totalShippingCost, analytics, analyticsStatement, ordersAnalytics, ordersCancelled};
+  return { totalSales, totalItemsPurchased, totalShippingCost, analytics, analyticsStatement, ordersAnalytics, ordersCancelled };
 }
 
 /**
@@ -88,7 +89,7 @@ function daysDifference(date1, date2) {
  */
 function setUpAverageSales(totalSales, fromDate, toDate) {
   const difference = daysDifference(Date.parse(fromDate), Date.parse(toDate));
-  salesPerDay = difference === 0 ? totalSales : totalSales / difference;
+  const salesPerDay = difference === 0 ? totalSales : totalSales / difference;
   return salesPerDay;
 }
 
@@ -140,19 +141,19 @@ Template.actionableAnalytics.onCreated(function () {
 Template.actionableAnalytics.onRendered(() => {
   const instance = Template.instance();
   let fromDatePicker = {};
-  const toDatePicker = new Pikaday({
+  const toDatePicker = new Pikaday({ // eslint-disable-line no-undef
     field: $("#todatepicker")[0],
     format: "DD/MM/YYYY",
-    onSelect: function () {
+    onSelect() {
       const nextDate = this.getDate();
       instance.state.set("afterDate", nextDate);
     }
   });
 
-  fromDatePicker = new Pikaday({
+  fromDatePicker = new Pikaday({ // eslint-disable-line no-undef
     field: $("#fromdatepicker")[0],
     format: "DD/MM/YYYY",
-    onSelect: function () {
+    onSelect() {
       toDatePicker.setMinDate(this.getDate());
       const nextDate = this.getDate();
       if (Date.parse(toDatePicker.getDate()) < Date.parse(nextDate)) {
@@ -166,15 +167,13 @@ Template.actionableAnalytics.onRendered(() => {
   toDatePicker.setMaxDate(new Date());
   fromDatePicker.setDate(new Date());
   toDatePicker.setDate(fromDatePicker.getDate());
-  // toDatePicker.setDate(new Date(fromDatePicker.getDate().setHours(23)));
-  // instance.state.set("salesPerDay", setUpAverageSales(instance.state.get("totalSales"), fromDatePicker.getDate(), toDatePicker.getDate()));
 });
 
 Template.actionableAnalytics.helpers({
   ordersPlaced() {
     const instance = Template.instance();
     const orders = instance.state.get("ordersPlaced");
-    return orders - Template.instance().state.get("ordersCancelled");;
+    return orders - Template.instance().state.get("ordersCancelled");
   },
   totalSales() {
     const instance = Template.instance();
@@ -196,19 +195,15 @@ Template.actionableAnalytics.helpers({
     const products = [];
     const instance = Template.instance();
     const analytics = instance.state.get("analytics");
-    for (const key in analytics) {
-      if (key) {
-        products.push({
-          product: key,
-          quantitySold: analytics[key].quantitySold
-        });
-      }
-    }
+    Object.keys(analytics).forEach((key) => {
+      products.push({
+        product: key,
+        quantitySold: analytics[key].quantitySold
+      });
+    });
     return _.orderBy(
       products,
-      (product) => {
-        return product.quantitySold;
-      },
+      product => product.quantitySold,
       "desc"
     );
   },
@@ -216,20 +211,16 @@ Template.actionableAnalytics.helpers({
     const products = [];
     const instance = Template.instance();
     const analytics = instance.state.get("analytics");
-    for (const key in analytics) {
-      if (key) {
-        products.push({
-          product: key,
-          salesSorter: analytics[key].totalSales,
-          totalSales: formatPriceString(analytics[key].totalSales)
-        });
-      }
-    }
+    Object.keys(analytics).forEach((key) => {
+      products.push({
+        product: key,
+        salesSorter: analytics[key].totalSales,
+        totalSales: formatPriceString(analytics[key].totalSales)
+      });
+    });
     return _.orderBy(
       products,
-      (product) => {
-        return product.salesSorter;
-      },
+      product => product.salesSorter,
       "desc"
     );
   },
@@ -237,18 +228,16 @@ Template.actionableAnalytics.helpers({
     const statements = [];
     const instance = Template.instance();
     const analyticsStatement = instance.state.get("analyticsStatement");
-    for (const key in analyticsStatement) {
-      if (key) {
-        statements.push(analyticsStatement[key]);
-        analyticsStatement[key].totalSales = formatPriceString(analyticsStatement[key].totalSales);
-      }
-    }
+
+    Object.keys(analyticsStatement).forEach((key) => {
+      statements.push(analyticsStatement[key]);
+      analyticsStatement[key].totalSales = formatPriceString(analyticsStatement[key].totalSales);
+    });
     return _.orderBy(
       statements,
-      (statement) => {
-        return Date.parse(statement.dateString);
-      },
-      "desc");
+      statement => Date.parse(statement.dateString),
+      "desc"
+    );
   },
   orders() {
     const instance = Template.instance();
@@ -256,9 +245,10 @@ Template.actionableAnalytics.helpers({
     return _.orderBy(
       orders,
       (order) => {
-        order.taxes = formatPriceString(order.taxes);
-        order.shipping = formatPriceString(order.shipping);
-        return Date.parse(order.date);
+        const currentOrder = order;
+        currentOrder.taxes = formatPriceString(currentOrder.taxes);
+        currentOrder.shipping = formatPriceString(currentOrder.shipping);
+        return Date.parse(currentOrder.date);
       },
       "desc"
     );
@@ -267,9 +257,7 @@ Template.actionableAnalytics.helpers({
     const instance = Template.instance();
     const productsAnalytics = instance.state.get("productsAnalytics");
     return _.orderBy(productsAnalytics,
-      (product) => {
-        return product.views;
-      },
+      product => product.views,
       "desc"
     );
   },
