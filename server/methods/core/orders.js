@@ -1097,8 +1097,8 @@ export const methods = {
           msgtype: 0
         }
       }, (error, result) => {
-        if( error ) {
-          Logger.warn("ERROR IN SEDING THE SMS", error)
+        if (error) {
+          Logger.warn("ERROR IN SEDING THE SMS", error);
         } else {
           Logger.info("New order sms alert sent to ", smsContent.to, result);
         }
