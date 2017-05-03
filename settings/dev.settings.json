@@ -7,5 +7,11 @@
     "REACTION_EMAIL": ""
   },
   "REACTION_LOG_LEVEL": "info",
-  "public": {}
+  "public": {},
+   "SMS": {
+     "OWNEREMAIL": "",
+     "SUBACCT": "",
+     "SUBACCTPWD": "",
+     "URL": ""
+   }
 }
