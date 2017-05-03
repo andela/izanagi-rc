@@ -445,11 +445,10 @@ export const methods = {
     const customerPhoneNumber = order.billing[0].address.phone;
 
     const shop = Shops.findOne(order.shopId);
-    const shopContact = shop.addressBook[0];
 
     const customerMessageContent = {
       to: customerPhoneNumber,
-      message: `Your order has been received and is now being processed. Thanks.`
+      message: "Your order has been received and is now being processed. Thanks."
     };
     if (order.workflow.status === "new") {
       Meteor.call("send/sms/alert", customerMessageContent, (error, result) => {
@@ -1082,7 +1081,7 @@ export const methods = {
     Meteor.call("orders/sendNotification", order, "refunded");
   },
 
-   "send/sms/alert": function (smsContent) {
+  "send/sms/alert": function (smsContent) {
     check(smsContent, Object);
     HTTP.call("GET", Meteor.settings.SMS.URL,
       {
