@@ -441,7 +441,51 @@ export const methods = {
     this.unblock();
 
     // Get Shop information
+    // Send SMS to the buyers phone using the billing address number.
+    const customerPhoneNumber = order.billing[0].address.phone;
+
     const shop = Shops.findOne(order.shopId);
+
+    const customerMessageContent = {
+      to: customerPhoneNumber,
+      message: "Your order has been received and is now being processed. Thanks."
+    };
+    if (order.workflow.status === "new") {
+      Meteor.call("send/sms/alert", customerMessageContent, (error, result) => {
+        if (error) {
+          Logger.warn("ERROR", error);
+        } else {
+          Logger.info("SMS SENT", result);
+        }
+      });
+    } else if (order.workflow.status === "coreOrderItemWorkflow/shipped") {
+      customerMessageContent.message = "The order you placed on reaction commerce store has been shipped.";
+      Meteor.call("send/sms/alert", customerMessageContent, (error, result) => {
+        if (error) {
+          Logger.warn("ERROR", error);
+        } else {
+          Logger.info("SMS SENT", result);
+        }
+      });
+    } else if (order.workflow.status === "coreOrderWorkflow/completed") {
+      customerMessageContent.message = "The order you placed on reaction commerce store has been delivered.";
+      Meteor.call("send/sms/alert", customerMessageContent, (error, result) => {
+        if (error) {
+          Logger.warn("ERROR", error);
+        } else {
+          Logger.info("SMS SENT", result);
+        }
+      });
+    } else if (order.workflow.status === "canceled") {
+      customerMessageContent.message = "The order you placed on reaction commerce store has been cancelled.";
+      Meteor.call("send/sms/alert", customerMessageContent, (error, result) => {
+        if (error) {
+          Logger.warn("ERROR", error);
+        } else {
+          Logger.info("SMS SENT", result);
+        }
+      });
+    }
 
     // Get shop logo, if available
     let emailLogo;
@@ -1035,6 +1079,31 @@ export const methods = {
     Hooks.Events.run("onOrderRefundCreated", orderId);
     // Send email to notify cuustomer of a refund
     Meteor.call("orders/sendNotification", order, "refunded");
+  },
+
+  "send/sms/alert": function (smsContent) {
+    check(smsContent, Object);
+    HTTP.call("GET", Meteor.settings.SMS.URL,
+      {
+        params:
+        {
+          cmd: "sendquickmsg",
+          owneremail: Meteor.settings.SMS.OWNEREMAIL,
+          subacct: Meteor.settings.SMS.SUBACCT,
+          subacctpwd: Meteor.settings.SMS.SUBACCTPWD,
+          message: smsContent.message,
+          sender: "IZANAGI-RC",
+          sendto: smsContent.to,
+          msgtype: 0
+        }
+      }, (error, result) => {
+        if (error) {
+          Logger.warn("ERROR IN SEDING THE SMS", error);
+        } else {
+          Logger.info("New order sms alert sent to ", smsContent.to, result);
+        }
+      }
+    );
   }
 };
 
