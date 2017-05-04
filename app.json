@@ -6,9 +6,6 @@
     "BUILDPACK_CLEAR_CACHE": {
       "required": true
     },
-		"SMS": {
- 			"required": true
- 		},
     "MONGODB_URI": {
       "required": true
     },
