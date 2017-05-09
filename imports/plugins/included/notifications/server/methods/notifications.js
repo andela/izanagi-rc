@@ -31,14 +31,18 @@ Meteor.methods({
       forAdmin: "You have a new order.",
       orderDelivered: "Your order has been delivered.",
       orderAccepted: "Your order has been accepted.",
-      orderShipped: "Your order has been shipped."
+      orderShipped: "Your order has been shipped.",
+      orderRefund: "You have been refunded"
     };
+
+    console.log(userId, type, url, "logging details");
 
     if (userId && type && url) {
       values.type = type;
       values.to = userId;
       values.url = url;
       values.message = types[type];
+      console.log(values.message, "message");
       values.hasDetails = false;
       if (details) {
         values.hasDetails = true;

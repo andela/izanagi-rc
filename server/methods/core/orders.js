@@ -258,7 +258,7 @@ export const methods = {
     check(newComment, Object);
 
     // Update Order
-    return Orders.update(order._id, {
+    Orders.update(order._id, {
       $set: {
         "workflow.status": "cancelled"
       },
@@ -269,6 +269,7 @@ export const methods = {
         "workflow.workflow": "coreOrderWorkflow/cancelled"
       }
     });
+    return Meteor.call("wallet/refund", order);
   },
 
   /**
@@ -288,7 +289,7 @@ export const methods = {
     }
 
      // Update Order
-    return Orders.update(order._id, {
+    Orders.update(order._id, {
       $set: {
         "workflow.status": "cancelled"
       },
@@ -299,6 +300,7 @@ export const methods = {
         "workflow.workflow": "coreOrderWorkflow/cancelled"
       }
     });
+    return Meteor.call("wallet/refund", order);
   },
   /**
    * orders/shipmentShipped
