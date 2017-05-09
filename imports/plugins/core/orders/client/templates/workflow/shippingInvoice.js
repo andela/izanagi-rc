@@ -207,6 +207,7 @@ Template.coreOrderShippingInvoice.events({
             if (error) {
               Alerts.alert(error.reason);
             }
+            Meteor.call("notification/send", order.userId, "orderRefund", "/", false);
             Alerts.toast(i18next.t("mail.alerts.emailSent"), "success");
             state.set("field-refund", 0);
             state.set("isRefunding", false);

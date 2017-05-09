@@ -31,7 +31,8 @@ Meteor.methods({
       forAdmin: "You have a new order.",
       orderDelivered: "Your order has been delivered.",
       orderAccepted: "Your order has been accepted.",
-      orderShipped: "Your order has been shipped."
+      orderShipped: "Your order has been shipped.",
+      orderRefund: "You have been refunded"
     };
 
     if (userId && type && url) {

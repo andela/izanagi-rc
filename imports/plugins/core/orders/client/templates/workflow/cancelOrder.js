@@ -84,6 +84,7 @@ Template.coreOrderCancelOrder.events({
             template.showCancelOrderForm.set(false);
           }
         });
+        Meteor.call("notification/send", order.userId, "orderCancelled", "/", false);
       }
     });
   }
