@@ -35,14 +35,11 @@ Meteor.methods({
       orderRefund: "You have been refunded"
     };
 
-    console.log(userId, type, url, "logging details");
-
     if (userId && type && url) {
       values.type = type;
       values.to = userId;
       values.url = url;
       values.message = types[type];
-      console.log(values.message, "message");
       values.hasDetails = false;
       if (details) {
         values.hasDetails = true;
