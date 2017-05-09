@@ -34,6 +34,16 @@ Template.loginDropdown.events({
   },
 
   /**
+   * Wallet form
+   * @param  {Event} event - jQuery Event
+   * @return {void}
+   */
+  "click #wallet": (event) => {
+    event.preventDefault();
+    FlowRouter.go("/wallet");
+  },
+
+  /**
    * Submit sign up form
    * @param  {Event} event - jQuery Event
    * @param  {Template} template - Blaze Template

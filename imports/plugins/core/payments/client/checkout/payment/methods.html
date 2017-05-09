@@ -18,3 +18,29 @@
   {{/each}}
 
 </template>
+
+<template name="walletPayment">
+  <div class="panel-group panel-group-accordian" id="wallet-accordian" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+      <a class="panel-heading"
+        role="tab"
+        id="wallet"
+        data-toggle="collapse"
+        data-parent="#wallet-accordian"
+        aria-expanded="false"
+        aria-controls="wallet-details"
+        href="#wallet-details">
+
+        <h4 class="panel-title">
+          <i class="fa fa-credit-card-alt"></i>&nbsp;<span>Wallet</span>
+        </h4>
+      </a>
+      <div class="panel-collapse collapse" id="wallet-details" role="tabpanel" aria-labelledby="wallet">
+        <div class="core-payment-method-form panel-body">
+          <p class="text-center">Your wallet balance is {{formatPrice balance}}</p>
+        </div>
+        <input type="button" id="pay-with-wallet" class="btn btn-success col-md-6 col-md-offset-3" value="Pay with wallet"/>
+      </div>
+    </div>
+  </div>
+</template>

@@ -403,6 +403,10 @@
       "format": "%s%v",
       "symbol": "RM"
     },
+    "NGN": {
+      "format": "%s%v",
+      "symbol": "₦"
+    },
     "NZD": {
       "enabled": false,
       "format": "%s%v",
@@ -3177,7 +3181,8 @@
     "tag",
     "index",
     "cart/checkout",
-    "cart/completed"
+    "cart/completed",
+    "wallet"
   ]
 }, {
   "_id": "ddzuN2YPvgvx7rJS5",
@@ -6354,6 +6359,7 @@
     "tag",
     "index",
     "cart/checkout",
-    "cart/completed"
+    "cart/completed",
+    "wallet"
   ]
 }]

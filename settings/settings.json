@@ -1,0 +1,17 @@
+{
+  "ROOT_URL": "",
+  "MAIL_URL": "",
+  "reaction": {
+    "REACTION_USER": "Awa",
+    "REACTION_AUTH": "password",
+    "REACTION_EMAIL": "awa@gmail.com"
+  },
+  "REACTION_LOG_LEVEL": "info",
+  "public": {},
+   "SMS": {
+     "OWNEREMAIL": "",
+     "SUBACCT": "",
+     "SUBACCTPWD": "",
+     "URL": ""
+   }
+}
