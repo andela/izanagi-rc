@@ -1,0 +1,89 @@
+<template name="wallet">
+  <div class="flex flex-column flex-align-center flex-2x container-lg">
+
+    <div class="flex-item">
+      <div class="panel panel-lg">
+        <div class="panel-heading">
+          <h3 class="panel-title">Your Balance</h3>
+        </div>
+        <div class="panel-content">
+          <span style="font-weight: bolder; font-size: 4.2em">{{formatPrice balance}}</span>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div class="flex-item">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Deposit</h3>
+        </div>
+
+        <div class="panel-content">
+          <form id="deposit">
+            <div class="row form-group col-md-6 col-md-offset-3">
+              <input id="depositAmount" class="form-control" type="number" placeholder="Amount">
+            </div>
+            <button type="submit" class="row col-md-2 col-md-offset-5 btn btn-success">Deposit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-item">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Transfer</h3>
+        </div>
+
+        <div class="panel-content">
+          <form id="transfer">
+            <div class="col-xs-6">
+              <input id="transferAmount" class="form-control" type="number" name="amount" placeholder="Amount">
+            </div>
+            <div class="col-xs-6">
+              <input id="recipient" class="form-control" type="text" name="email" placeholder="Beneficiary Email">
+            </div>
+            <button type="submit" class="btn btn-success col-md-2 col-md-offset-5" style="margin-top:15px">Transfer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-10" id="transactions">
+      <div class="row">
+        <h2>Transactions</h2>
+
+        <table class="table table-hover table-bordered">
+          <thead>
+            <tr>
+              <th>Transaction Type</th>
+              <th>Amount</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Order Id</th>
+              <th>Date and Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#if getTransactions }}
+              {{#each transaction in getTransactions }}
+              <tr>
+                <td>{{capitalize transaction.transactionType}}</td>
+                <td>{{formatPrice transaction.amount}}</td>
+                <td>{{transaction.from}}</td>
+                <td>{{transaction.to}}</td>
+                <td>{{transaction.orderId}}</td>
+                <td>{{transaction.date}}</td>
+              </tr>
+              {{/each}}
+            {{else}}
+            <tr>You do not have any transaction yet!</tr>
+            {{/if}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</template>

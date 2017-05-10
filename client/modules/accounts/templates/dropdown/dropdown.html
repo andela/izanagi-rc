@@ -34,6 +34,14 @@
 <template name="accountsDropdownApps">
   <ul class="user-accounts-dropdown-apps">
     {{> userAccountsDropdown}}
+    {{#if currentUser}}
+      <li class="dropdown-apps-icon">
+        <a id="wallet">
+          <i class="fa fa-credit-card-alt"></i>
+          <span class="icon-text">Wallet</span>
+        </a>
+      </li>
+    {{/if}}
     <!--administrative shortcut icons -->
     {{#each reactionApps reactionAppsOptions}}
       <li class="dropdown-apps-icon">

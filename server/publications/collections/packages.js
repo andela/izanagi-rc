@@ -56,6 +56,11 @@ function transform(doc, userId) {
   // in this transform. non admin users should get public setting
   if (hasAdmin === false && doc.settings) {
     registrySettings.public = doc.settings.public;
+    if (doc.settings.publicKey  && doc.settings.secretKey) {
+      registrySettings.publicKey = doc.settings.publicKey;
+      registrySettings.secretKey = doc.settings.secretKey;
+    }
+    
     delete doc.settings;
     Object.assign(packageSettings, registrySettings);
     doc.settings = packageSettings;
